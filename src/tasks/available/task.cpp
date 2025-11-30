@@ -2,6 +2,17 @@
 
 AvailableTask::AvailableTask(PubSubClient *client) : Task(client) {};
 
+void AvailableTask::loop(unsigned long *ms)
+{
+    if (isSameInterval(lastPublishedAt, *ms, AVAILABLE_PUBLISH_INTERVAL_MS))
+        return;
+
+    if (Task::isConnected())
+    {
+        publishOnline();
+        lastPublishedAt = *ms;
+    }
+}
 void AvailableTask::cleanup()
 {
     publishOffline();

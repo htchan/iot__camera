@@ -8,10 +8,12 @@ class AvailableTask : public Task
 {
 public:
     AvailableTask(PubSubClient *);
+    void loop(unsigned long *) override;
     void cleanup() override;
     void publishDiscovery() override;
 
 private:
+    unsigned long lastPublishedAt = 0;
     void publishOnline();
     void publishOffline();
 };
