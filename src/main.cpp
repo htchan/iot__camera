@@ -3,6 +3,7 @@
 
 #include "tasks/available/task.h"
 #include "tasks/camera/task.h"
+#include "tasks/camera_led/task.h"
 // #include "tasks/light/task.h"
 #include "tasks/network/task.h"
 // #include "tasks/power/task.h"
@@ -15,6 +16,7 @@ WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 
 AvailableTask availableTask(&client);
+CameraLedTask cameraLedTask(&client);
 // PowerTask powerTask(&client);
 UptimeTask uptimeTask(&client);
 WifiStrengthTask wifiStrengthTask(&client);
@@ -38,6 +40,7 @@ void networkConnected()
   }
 
   cameraTask.subscribe();
+  cameraLedTask.subscribe();
   // powerTask.subscribe();
 }
 
@@ -66,6 +69,7 @@ void setup()
 
   // tasks.push_back(&powerTask);
   tasks.push_back(&availableTask);
+  tasks.push_back(&cameraLedTask);
   tasks.push_back(&uptimeTask);
   tasks.push_back(&networkTask);
   tasks.push_back(&wifiStrengthTask);
