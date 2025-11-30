@@ -18,7 +18,7 @@ void NetworkTask::setup()
 
     // setup Wifi
     WiFi.mode(WIFI_STA);
-    WiFi.setSleep(true);
+    // WiFi.setSleep(true);
     WiFi.disconnect();
     // WiFi.config(STATIC_IP, GATEWAY, SUBNET, DNS);
 };
