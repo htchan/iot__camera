@@ -74,9 +74,9 @@ void CameraTask::msgHandler(char *topic, std::string msg)
     // TODO: implement message handling
     if (strcmp(topic, (CAMERA_ENABLED_ENTITY + COMMAND_TOPIC).c_str()) == 0)
     {
-        if (msg == CAMERA_COMMAND_ON)
+        if (msg == CAMERA_COMMAND_ON && !enabled)
             startCamera();
-        else if (msg == CAMERA_COMMAND_OFF)
+        else if (msg == CAMERA_COMMAND_OFF && enabled)
             stopCamera();
         Task::publish((CAMERA_ENABLED_ENTITY + STATE_TOPIC), enabled ? CAMERA_COMMAND_ON : CAMERA_COMMAND_OFF);
     }
