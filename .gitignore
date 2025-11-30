@@ -1,2 +1,4 @@
 .pio
 .vscode/*
+
+src/secrets/secrets.cpp
