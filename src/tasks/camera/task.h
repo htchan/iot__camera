@@ -7,9 +7,6 @@
 #include "esp_camera.h"
 #include "esp_http_server.h"
 
-void initCamera();
-void stopCamera();
-
 class CameraTask : public Task
 {
 public:

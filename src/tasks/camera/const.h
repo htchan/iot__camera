@@ -27,8 +27,6 @@
 #define CAMERA_COMMAND_ON "ON"
 #define CAMERA_COMMAND_OFF "OFF"
 
-#define LED_PIN 33
-
 const std::string CAMERA_ENABLED_ENTITY = "homeassistant/switch/" + DEVICE_ID + "/camera_enabled";
 const std::string CAMERA_ENABLED_DISCOVERY_PAYLOAD =
     R"({

@@ -142,19 +142,14 @@ void CameraTask::startCamera()
 {
     // optionally power down the sensor if PWDN is defined in your config
     if (config.pin_pwdn >= 0)
-    {
         digitalWrite(config.pin_pwdn, LOW); // HIGH usually = power down
-    }
 
     esp_err_t err = esp_camera_init(&config);
     if (err != ESP_OK)
-    {
         return;
-    }
-
-    applyFlipSettings();
 
     enabled = true;
+    applyFlipSettings();
     publishImage();
 }
 
