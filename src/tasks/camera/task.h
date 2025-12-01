@@ -15,9 +15,6 @@ public:
     void loop(unsigned long *) override;
     void cleanup() override;
     void publishDiscovery() override;
-    bool matchTopic(char *) override;
-    void msgHandler(char *, std::string) override;
-    void subscribe();
 
 private:
     camera_config_t config;
@@ -30,6 +27,10 @@ private:
     void startCamera();
     void publishImage();
     void applyFlipSettings();
+    void handleEnableCommand(std::string);
+    void handleFpsCommand(std::string);
+    void handleVFlipCommand(std::string);
+    void handleHFlipCommand(std::string);
 };
 
 #endif

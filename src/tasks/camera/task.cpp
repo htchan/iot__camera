@@ -1,6 +1,15 @@
 #include "task.h"
 
-CameraTask::CameraTask(PubSubClient *cli) : Task(cli) {};
+CameraTask::CameraTask(PubSubClient *cli) : Task(
+                                                cli,
+                                                {{CAMERA_ENABLED_ENTITY + COMMAND_TOPIC, [this](std::string msg)
+                                                  { handleEnableCommand(msg); }},
+                                                 {CAMERA_H_FLIP_ENTITY + COMMAND_TOPIC, [this](std::string msg)
+                                                  { handleHFlipCommand(msg); }},
+                                                 {CAMERA_V_FLIP_ENTITY + COMMAND_TOPIC, [this](std::string msg)
+                                                  { handleVFlipCommand(msg); }},
+                                                 {CAMERA_FPS_ENTITY + STATE_TOPIC, [this](std::string msg)
+                                                  { handleFpsCommand(msg); }}}) {};
 
 void CameraTask::setup()
 {
@@ -59,62 +68,6 @@ void CameraTask::publishDiscovery()
     Task::publish((CAMERA_V_FLIP_ENTITY + DISCOVERY_TOPIC), CAMERA_V_FLIP_DISCOVERY_PAYLOAD);
     Task::publish((CAMERA_IMAGE_ENTITY + DISCOVERY_TOPIC), CAMERA_IMAGE_DISCOVERY_PAYLOAD);
     Task::publish((CAMERA_FPS_ENTITY + DISCOVERY_TOPIC), CAMERA_FPS_DISCOVERY_PAYLOAD);
-}
-
-bool CameraTask::matchTopic(char *topic)
-{
-    return strcmp(topic, (CAMERA_ENABLED_ENTITY + COMMAND_TOPIC).c_str()) == 0 ||
-           strcmp(topic, (CAMERA_H_FLIP_ENTITY + COMMAND_TOPIC).c_str()) == 0 ||
-           strcmp(topic, (CAMERA_V_FLIP_ENTITY + COMMAND_TOPIC).c_str()) == 0 ||
-           strcmp(topic, (CAMERA_FPS_ENTITY + STATE_TOPIC).c_str()) == 0;
-}
-
-void CameraTask::msgHandler(char *topic, std::string msg)
-{
-    // TODO: implement message handling
-    if (strcmp(topic, (CAMERA_ENABLED_ENTITY + COMMAND_TOPIC).c_str()) == 0)
-    {
-        if (msg == CAMERA_COMMAND_ON && !enabled)
-            startCamera();
-        else if (msg == CAMERA_COMMAND_OFF && enabled)
-            stopCamera();
-        Task::publish((CAMERA_ENABLED_ENTITY + STATE_TOPIC), enabled ? CAMERA_COMMAND_ON : CAMERA_COMMAND_OFF);
-    }
-    else if (strcmp(topic, (CAMERA_H_FLIP_ENTITY + COMMAND_TOPIC).c_str()) == 0)
-    {
-        if (msg == CAMERA_COMMAND_ON)
-            horizontalFlip = 1;
-        else if (msg == CAMERA_COMMAND_OFF)
-            horizontalFlip = 0;
-
-        applyFlipSettings();
-        Task::publish((CAMERA_H_FLIP_ENTITY + STATE_TOPIC), horizontalFlip ? CAMERA_COMMAND_ON : CAMERA_COMMAND_OFF);
-    }
-    else if (strcmp(topic, (CAMERA_V_FLIP_ENTITY + COMMAND_TOPIC).c_str()) == 0)
-    {
-        if (msg == CAMERA_COMMAND_ON)
-            verticalFlip = 1;
-        else if (msg == CAMERA_COMMAND_OFF)
-            verticalFlip = 0;
-
-        applyFlipSettings();
-        Task::publish((CAMERA_V_FLIP_ENTITY + STATE_TOPIC), verticalFlip ? CAMERA_COMMAND_ON : CAMERA_COMMAND_OFF);
-    }
-    else if (strcmp(topic, (CAMERA_FPS_ENTITY + STATE_TOPIC).c_str()) == 0)
-    {
-        float fps = std::stof(msg);
-        fps = std::max(0.1f, std::min(fps, 10.0f));
-
-        periodMs = 1000 / fps;
-    }
-}
-
-void CameraTask::subscribe()
-{
-    Task::subscribe(CAMERA_ENABLED_ENTITY + COMMAND_TOPIC);
-    Task::subscribe(CAMERA_H_FLIP_ENTITY + COMMAND_TOPIC);
-    Task::subscribe(CAMERA_V_FLIP_ENTITY + COMMAND_TOPIC);
-    Task::subscribe(CAMERA_FPS_ENTITY + STATE_TOPIC);
 }
 
 void CameraTask::stopCamera()
@@ -181,4 +134,44 @@ void CameraTask::applyFlipSettings()
         // Enable horizontal mirror (left <-> right)
         s->set_hmirror(s, horizontalFlip); // 1 is enable, 0 is disable
     }
+}
+
+void CameraTask::handleEnableCommand(std::string msg)
+{
+
+    if (msg == CAMERA_COMMAND_ON && !enabled)
+        startCamera();
+    else if (msg == CAMERA_COMMAND_OFF && enabled)
+        stopCamera();
+    Task::publish((CAMERA_ENABLED_ENTITY + STATE_TOPIC), enabled ? CAMERA_COMMAND_ON : CAMERA_COMMAND_OFF);
+}
+
+void CameraTask::handleFpsCommand(std::string msg)
+{
+    float fps = std::stof(msg);
+    fps = std::max(0.1f, std::min(fps, 10.0f));
+
+    periodMs = 1000 / fps;
+}
+
+void CameraTask::handleHFlipCommand(std::string msg)
+{
+    if (msg == CAMERA_COMMAND_ON)
+        horizontalFlip = 1;
+    else if (msg == CAMERA_COMMAND_OFF)
+        horizontalFlip = 0;
+
+    applyFlipSettings();
+    Task::publish((CAMERA_H_FLIP_ENTITY + STATE_TOPIC), horizontalFlip ? CAMERA_COMMAND_ON : CAMERA_COMMAND_OFF);
+}
+
+void CameraTask::handleVFlipCommand(std::string msg)
+{
+    if (msg == CAMERA_COMMAND_ON)
+        verticalFlip = 1;
+    else if (msg == CAMERA_COMMAND_OFF)
+        verticalFlip = 0;
+
+    applyFlipSettings();
+    Task::publish((CAMERA_V_FLIP_ENTITY + STATE_TOPIC), verticalFlip ? CAMERA_COMMAND_ON : CAMERA_COMMAND_OFF);
 }

@@ -1,6 +1,9 @@
 #include "task.h"
 
-CameraLedTask::CameraLedTask(PubSubClient *client) : Task(client) {};
+CameraLedTask::CameraLedTask(PubSubClient *client) : Task(
+                                                         client,
+                                                         {{CAMERA_LED_ENTITY + COMMAND_TOPIC, [this](std::string message)
+                                                           { handleLedCommand(message); }}}) {};
 
 void CameraLedTask::setup()
 {
@@ -18,12 +21,19 @@ void CameraLedTask::publishDiscovery()
     Task::publish((CAMERA_LED_ENTITY + DISCOVERY_TOPIC), CAMERA_LED_DISCOVERY_PAYLOAD);
 }
 
-bool CameraLedTask::matchTopic(char *topic)
+void CameraLedTask::turnOn()
 {
-    return strcmp(topic, (CAMERA_LED_ENTITY + COMMAND_TOPIC).c_str()) == 0;
+    digitalWrite(CAMERA_LED_PIN, LOW);
+    enabled = true;
 }
 
-void CameraLedTask::msgHandler(char *topic, std::string message)
+void CameraLedTask::turnOff()
+{
+    digitalWrite(CAMERA_LED_PIN, HIGH);
+    enabled = false;
+}
+
+void CameraLedTask::handleLedCommand(std::string message)
 {
     if (message == CAMERA_LED_COMMAND_ON && !enabled)
     {
@@ -35,21 +45,4 @@ void CameraLedTask::msgHandler(char *topic, std::string message)
     }
 
     Task::publish((CAMERA_LED_ENTITY + STATE_TOPIC), enabled ? CAMERA_LED_COMMAND_ON : CAMERA_LED_COMMAND_OFF);
-}
-
-void CameraLedTask::subscribe()
-{
-    Task::subscribe(CAMERA_LED_ENTITY + COMMAND_TOPIC);
-}
-
-void CameraLedTask::turnOn()
-{
-    digitalWrite(CAMERA_LED_PIN, LOW);
-    enabled = true;
-}
-
-void CameraLedTask::turnOff()
-{
-    digitalWrite(CAMERA_LED_PIN, HIGH);
-    enabled = false;
 }

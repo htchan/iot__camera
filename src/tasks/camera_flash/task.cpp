@@ -2,7 +2,12 @@
 #include "task.h"
 #include "const.h"
 
-CameraFlashTask::CameraFlashTask(PubSubClient *client) : Task(client) {};
+CameraFlashTask::CameraFlashTask(PubSubClient *client) : Task(
+                                                             client,
+                                                             {{CAMERA_FLASH_ENTITY + COMMAND_TOPIC, [this](std::string message)
+                                                               { handleEnableCommand(message); }},
+                                                              {CAMERA_FLASH_ENTITY + BRIGHTNESS_COMMAND_TOPIC, [this](std::string message)
+                                                               { handleBrightnessCommand(message); }}}) {};
 
 void CameraFlashTask::setup()
 {
@@ -37,30 +42,6 @@ void CameraFlashTask::cleanup()
 void CameraFlashTask::publishDiscovery()
 {
     Task::publish((CAMERA_FLASH_ENTITY + DISCOVERY_TOPIC), CAMERA_FLASH_DISCOVERY_PAYLOAD);
-}
-
-bool CameraFlashTask::matchTopic(char *topic)
-{
-    return strcmp(topic, (CAMERA_FLASH_ENTITY + COMMAND_TOPIC).c_str()) == 0 ||
-           strcmp(topic, (CAMERA_FLASH_ENTITY + BRIGHTNESS_COMMAND_TOPIC).c_str()) == 0;
-}
-
-void CameraFlashTask::msgHandler(char *topic, std::string message)
-{
-    if (strcmp(topic, (CAMERA_FLASH_ENTITY + COMMAND_TOPIC).c_str()) == 0)
-    {
-        handleEnableCommand(message);
-    }
-    else if (strcmp(topic, (CAMERA_FLASH_ENTITY + BRIGHTNESS_COMMAND_TOPIC).c_str()) == 0)
-    {
-        handleBrightnessCommand(message);
-    }
-}
-
-void CameraFlashTask::subscribe()
-{
-    Task::subscribe(CAMERA_FLASH_ENTITY + COMMAND_TOPIC);
-    Task::subscribe(CAMERA_FLASH_ENTITY + BRIGHTNESS_COMMAND_TOPIC);
 }
 
 void CameraFlashTask::setFlashBrightness(uint32_t duty_percent)

@@ -11,14 +11,12 @@ public:
     void setup() override;
     void cleanup() override;
     void publishDiscovery() override;
-    bool matchTopic(char *) override;
-    void msgHandler(char *, std::string) override;
-    void subscribe();
 
 private:
     bool enabled = false;
     void turnOn();
     void turnOff();
+    void handleLedCommand(std::string payload);
 };
 
 #endif

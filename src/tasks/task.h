@@ -9,12 +9,41 @@ class Task
 {
 public:
     Task(PubSubClient *cli) : client(cli) {};
+    Task(PubSubClient *cli, std::list<std::pair<std::string, std::function<void(std::string)>>> pairs) : client(cli), msgHandlers(pairs) {};
     virtual void setup() {};
     virtual void cleanup() {};
     virtual void loop(unsigned long *ms) {};
     virtual void publishDiscovery() {};
-    virtual bool matchTopic(char *) { return false; };
-    virtual void msgHandler(char *, std::string) {};
+    virtual bool matchTopic(char *topic)
+    {
+        for (auto &handlerPair : msgHandlers)
+        {
+            if (strcmp(topic, handlerPair.first.c_str()) == 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    };
+    virtual void msgHandler(char *topic, std::string msg)
+    {
+        for (auto &handlerPair : msgHandlers)
+        {
+            if (strcmp(topic, handlerPair.first.c_str()) == 0)
+            {
+                handlerPair.second(msg);
+                return;
+            }
+        }
+    };
+    virtual void subscribe()
+    {
+        for (auto &handlerPair : msgHandlers)
+        {
+            subscribe(handlerPair.first);
+        }
+    }
     virtual bool completed() { return true; };
 
 protected:
@@ -24,6 +53,7 @@ protected:
     void subscribe(std::string topic) { client->subscribe(topic.c_str()); }
     void unsubscribe(std::string topic) { client->unsubscribe(topic.c_str()); }
     PubSubClient *client;
+    std::list<std::pair<std::string, std::function<void(std::string)>>> msgHandlers;
 };
 
 inline bool isSameInterval(unsigned long time1, unsigned long time2, unsigned long interval)

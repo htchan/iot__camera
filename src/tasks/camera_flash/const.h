@@ -9,7 +9,7 @@
 #define LEDC_OUTPUT_IO (4) // Define the output GPIO
 #define LEDC_CHANNEL LEDC_CHANNEL_3
 #define LEDC_DUTY_RES LEDC_TIMER_11_BIT // Set duty resolution to 13 bits
-#define MAX_DUTY (1 << LEDC_DUTY_RES) / 10 - 1
+#define MAX_DUTY ((1 << LEDC_DUTY_RES) - 1) / 10
 #define LEDC_FREQUENCY (32000) // Frequency in Hertz. Set frequency at 4 kHz
 
 #define CAMERA_FLASH_COMMAND_ON "ON"
