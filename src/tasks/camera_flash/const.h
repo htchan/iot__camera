@@ -12,6 +12,8 @@
 #define MAX_DUTY ((1 << LEDC_DUTY_RES) - 1) / 10
 #define LEDC_FREQUENCY (32000) // Frequency in Hertz. Set frequency at 4 kHz
 
+#define CAMERA_FLASH_BRIGHTNESS_SCALE 20
+
 #define CAMERA_FLASH_COMMAND_ON "ON"
 #define CAMERA_FLASH_COMMAND_OFF "OFF"
 
@@ -29,7 +31,8 @@ const std::string CAMERA_FLASH_DISCOVERY_PAYLOAD =
     CAMERA_FLASH_ENTITY + COMMAND_TOPIC + R"(",
     "state_topic":")" +
     CAMERA_FLASH_ENTITY + STATE_TOPIC + R"(",
-    "brightness_scale":100,
+    "brightness_scale":,)" +
+    std::to_string(CAMERA_FLASH_BRIGHTNESS_SCALE) + R"(,
     "brightness_command_topic":")" +
     CAMERA_FLASH_ENTITY + BRIGHTNESS_COMMAND_TOPIC + R"(",
     "brightness_state_topic":")" +

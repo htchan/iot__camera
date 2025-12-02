@@ -48,7 +48,7 @@ void CameraFlashTask::setFlashBrightness(uint32_t duty_percent)
 {
     // Calculate duty based on the resolution.
     // For a 13-bit resolution, maximum duty is (2^13 - 1)
-    uint32_t duty = (duty_percent * MAX_DUTY) / 100;
+    uint32_t duty = (duty_percent * MAX_DUTY) / CAMERA_FLASH_BRIGHTNESS_SCALE;
 
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, duty));
     // Update duty to apply the new value
