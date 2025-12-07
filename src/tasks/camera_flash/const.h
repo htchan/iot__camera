@@ -31,7 +31,7 @@ const std::string CAMERA_FLASH_DISCOVERY_PAYLOAD =
     CAMERA_FLASH_ENTITY + COMMAND_TOPIC + R"(",
     "state_topic":")" +
     CAMERA_FLASH_ENTITY + STATE_TOPIC + R"(",
-    "brightness_scale":,)" +
+    "brightness_scale":)" +
     std::to_string(CAMERA_FLASH_BRIGHTNESS_SCALE) + R"(,
     "brightness_command_topic":")" +
     CAMERA_FLASH_ENTITY + BRIGHTNESS_COMMAND_TOPIC + R"(",
