@@ -1,7 +1,5 @@
 #include "task.h"
 
-#define UPTIME_PUBLISH_INTERVAL_MS 5000
-
 UptimeTask::UptimeTask(PubSubClient *client) : Task(client) {};
 
 void UptimeTask::cleanup()

@@ -4,7 +4,7 @@
 #include "../../const.h"
 #include "../available/const.h"
 
-#define UPTIME_PUBLISH_INTERVAL_MS 5000
+#define UPTIME_PUBLISH_INTERVAL_MS 60000
 
 const std::string UPTIME_ENTITY = "homeassistant/sensor/" + DEVICE_ID + "/uptime";
 const std::string UPTIME_DISCOVERY_PAYLOAD =
